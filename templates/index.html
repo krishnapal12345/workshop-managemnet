@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<head>
+    <title>
+        "Workshop Management"
+    </title>
+</head>
+<body>
+        <b>Requirement</b><br>
+    <form action="/run" method="POST">
+        Select workshop:
+        <select name="selectworkshop" id="selectworkshop">
+            <option value="select">select workshop</option>
+            <option value="photography">photography</option>
+            <option value="ethical hacking">ethical hacking</option>
+            <option value="robotic">robotic</option>
+        </select><br>
+        Select college:
+        <select name="selectcollege" id="selectcollege">
+            <option value="select">select college</option>
+            <option value="JECRC">JECRC</option>
+            <option value="SKIT">SKIT</option>
+            <option value="lmnit">lnmit</option>
+        </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Select Branch:
+        <select name="selectbranch" id="selectbranch">
+            <option value="select">Select Branch</option>
+            <option value="Btech">Btech</option>
+            <option value="BBA">BBA</option>
+            <option value="B.A">B.A</option>
+        </select>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        Student Name:<input type="text" name="StudentName"><br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <input type="submit" value="enroll">
+        
+    </form>
+
+    <h1>REGISTERD STUDENT</h1>
+    <table border="1">
+        <thead>
+        <tr>
+         <th>WorkshopName</th>
+         <th>college</th>
+         <th>branch</th>
+         <th>Studentname</th>
+        </tr>
+        </thead>
+    <tbody id="workshopdatatable"></tbody>
+    </table>
+<script>
+ function fetch_data(){
+    console.log('fetch function was called');
+    fetch('/data')
+      .then(response => response.json())
+      .then(data =>{
+        const tableBody= document.getElementById('workshopdatatable');
+        tableBody.innerHTML ='';
+        data.Data.forEach(row => {
+            const newRow =document.createElement('tr');
+            newRow.innerHTML=`
+             <td>${row.workshop}</td>
+             <td>${row.college}</td>
+             <td>${row.branch}</td>
+             <td>${row.StudentName}</td> 
+             `;
+             tableBody.appendChild(newRow);          
+        });
+      })
+ }
+
+
+   fetch_data();
+</script>
+
+    <h2>Statitics</h2>
+
+    <button id="table1" onclick="showtable1()">table1</button><button id="table2" onclick="showtable2()">table2</button>
+    <div  id="Statiticstable1">
+    <table  border="2">
+        <thead>
+            <tr>
+            <th>workshop</th>
+            <th>noofstudent</th>
+            </tr>
+        </thead>
+        <tbody id="table1Body"></tbody>
+    </table>
+    </div>
+    <div id="Statiticstable2">
+        <table border="1">
+            <thead>
+                <tr>
+                    <th>workshop</th>
+                    <th>college</th>
+                    <th>noofstudent</th>
+                </tr>
+            </thead>
+            <tbody id="table2Body"></tbody>
+        </table>
+        </div>
+<script>
+    function showtable1(){
+        console.log('showtable1 function was called');
+        const table=document.getElementById('Statiticstable1');
+        if(table.style.display==='none'){
+            table.style.display='block';
+        }else{
+            table.style.display='none';
+        }
+        fetch('/stat')
+            .then(response=>response.json())
+            .then(data=>{
+                const tableBody=document.getElementById("table1Body");
+                tableBody.innerHTML= ' ';
+                data.forEach(row=>{
+                    const newRow=document.createElement('tr');
+                    newRow.innerHTML=`
+                    <td>${row.workshop}</td>
+                    <td>${row.noofstudent}</td>
+                    `;
+                    tableBody.appendChild(newRow);
+                });
+            });
+            
+    }
+
+showtable1();
+
+    function showtable2(){
+        console.log('showtable2 function was called');
+        const table=document.getElementById('Statiticstable2');
+        if(table.style.display==='none'){
+            table.style.display='block'
+        }else{
+            table.style.display='none'
+        }
+        fetch('/stat2')
+           .then(response=>response.json())
+           .then(data=>{
+            const tableBody=document.getElementById('table2Body')
+            tableBody.innerHTML='';
+            for (const workshop in data){
+                if(data.hasOwnProperty(workshop)){
+                 const row=data[workshop];
+                 for (const college in row){
+                   if(row.hasOwnProperty(college)){
+                    const newRow=document.createElement('tr')
+                    newRow.innerHTML=`
+                     <td>${workshop}</td>
+                     <td>${college}</td>
+                     <td>${row[college]}</td>
+                    `;
+                    tableBody.appendChild(newRow);
+                   }
+                 } 
+               }
+             
+            };
+        });
+    
+    }
+
+    showtable2();
+</script>
+
+</body>
+</html>       
+    
