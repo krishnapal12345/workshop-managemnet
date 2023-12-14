@@ -1,5 +1,6 @@
 from flask import Flask,request,render_template,jsonify,redirect,url_for
 import json
+import mysql.connector
 app=Flask(__name__)
 class workshopTree:
    def __init__(self,data):
@@ -14,6 +15,16 @@ class workshopTree:
 @app.route('/')
 def home():
    return render_template("index.html")
+
+db_config={
+   'host':'localhost',
+   'user':'root',
+   'password':'krishna@2510',
+   'database':'workshop'
+}
+ 
+con= mysql.connector.connect(**db_config)
+cursor=con.cursor()
 
 @app.route('/run',methods=['POST','GET'])
 def run():
@@ -36,14 +47,15 @@ def run():
        college.Add_child(branch)
        branch.Add_child(name) 
 
-       selectworkshop=request.form.get('selectworkshop')
-       selectcollege=request.form.get('selectcollege')
-       selectbranch=request.form.get('selectbranch')
-       StudentName=request.form.get('StudentName')
+      if request.method=='POST':
+        workshop_name=request.form.get('selectworkshop')
+        college_name=request.form.get('selectcollege')
+        branch_name=request.form.get('selectbranch')
+        Name=request.form.get('StudentName')
 
-       with open('workshop.txt',mode='a',encoding='ISO-8859-1') as file:
-          file.write(f'\n{selectworkshop}:{selectcollege}:{selectbranch}:{StudentName}')
-       
+        cursor.execute("INSERT INTO Data (workshop,college,branch,name) VALUES (%s,%s,%s,%s)", (workshop_name,college_name,branch_name,Name))
+        con.commit()
+        
       return redirect(url_for('home'))
 @app.route('/data',methods=['GET'])
 def getdata():
